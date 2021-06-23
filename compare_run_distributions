@@ -6,7 +6,7 @@
 # legend is a dictionary {'text':'color'} that indicate what the colors of columns represent
 # title is name of plot to be displayed
 # ylabel is string to display on plot's y-axis label
-def plot_scores(score_dict, legend, title, ylabel, xlabel=None, setLimit=True, showLegend=True, bin_size=2, highlight=False):
+def compare_run_distributions(score_dict, legend, title, ylabel, xlabel=None, setLimit=True, showLegend=True, bin_size=2, highlight=False):
     # set section labels
     x_labels = []
     n_scores = len(score_dict)
