@@ -1,3 +1,12 @@
+# helper function
+def bin_scores(numbers, bin_size):
+    binned = []
+    for x in numbers:
+        if math.isnan(x):
+            continue
+        val = 100 * x
+        binned.append(int(val - val % bin_size) / 100)
+    return binned
 # simple plot of results
 # score_dict is dictionary following {'name':[[scores, color]]} of all scores to be plotted for that 'name' section
     # each 2-size array within the dictionary element will be its own column within the 'name' section
