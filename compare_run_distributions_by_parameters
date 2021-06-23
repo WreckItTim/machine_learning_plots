@@ -1,0 +1,78 @@
+# simple plot of results
+# score_dict is dictionary following {'name':[[scores, color]]} of all scores to be plotted for that 'name' section
+    # each 2-size array within the dictionary element will be its own column within the 'name' section
+    # scores is a list of scores to plot in that column
+    # color is the color of markers for that column
+# legend is a dictionary {'text':'color'} that indicate what the colors of columns represent
+# title is name of plot to be displayed
+# ylabel is string to display on plot's y-axis label
+def plot_scores(score_dict, legend, title, ylabel, xlabel=None, setLimit=True, showLegend=True, bin_size=2, highlight=False):
+    # set section labels
+    x_labels = []
+    n_scores = len(score_dict)
+    for name in score_dict:
+        x_labels.append(name)
+        for _ in range(1, len(score_dict[name])):
+            x_labels.append(' ')
+            n_scores += 1
+            
+    # set columns
+    x_nums = [x for x in range(n_scores)]
+    
+    # create figure
+    fig, ax = plt.subplots(ncols=1, figsize=(15, 7))#figsize=(n_scores, n_scores))
+    
+    # plot legend
+    matplotlib.rcParams.update({'font.size': 20})
+    if showLegend:
+        ax.legend(handles=[mpatches.Patch(label=text, color=legend[text]) for text in legend]#, loc='lower left')
+                 , loc='center left',bbox_to_anchor=(1.0, 0.5))
+        
+    matplotlib.rcParams.update({'font.size': 25})
+    if xlabel:
+        ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    
+    # set x labels and tick marks
+    ax.set_xticks(x_nums)
+    ax.set_xticklabels(x_labels, rotation=45)
+    ax.tick_params(axis='x', length=0) # no ticks for each column
+    ax.set_xlim([-0.5, n_scores-.5]) # n_scores number of columns each with a width of 1
+    
+    # set y tick marks and label
+    ax.set_ylabel(ylabel)
+    if setLimit:
+        ax.set_ylim([0.0, 1.01])
+        ax.set_yticks([y/100 for y in range(0, 101, 10)])
+        
+    # set horizontal grid lines
+    ax.grid(axis='y', linewidth=0.4)
+    
+    # plot scores
+    offset = 0
+    for name in score_dict:
+        
+        # plot section border line
+        ax.axvline(x=offset+len(score_dict[name])-0.5, color='grey', linewidth=0.8, alpha=0.8)
+        
+        # plot each column in section
+        for pair in score_dict[name]:
+            markers = {}
+            bin_these = pair[0]
+            if highlight:
+                bin_these = pair[0][2:]
+            for val in bin_scores(bin_these, bin_size):
+                if val not in markers:
+                    markers[val] = 0
+                markers[val] += 1
+            mAcc = 1
+            for val in markers:
+                mAcc = max(mAcc, markers[val])
+            for val in markers:
+                ax.scatter(offset, val, color=pair[1], marker='_', s=500*markers[val]/mAcc, linewidth=10)
+            if highlight:
+                ax.scatter(offset, pair[0][0], color='black', marker='_', s=500)
+                ax.scatter(offset, pair[0][1], color='black', marker=6)
+            
+            offset += 1
